@@ -14,9 +14,9 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-import { Plus, Download, FileText, Eye } from "lucide-react";
+import { Plus, Download, FileText, Eye, Sparkles, Wand2 } from "lucide-react";
 import { generateLaTeXResume } from "@/lib/resume-generator";
-
+// AI functions are now handled via API routes
 
 interface ResumeData {
   personalInfo: {
@@ -91,6 +91,9 @@ export default function ResumeGenerator() {
 
   const [generatedLaTeX, setGeneratedLaTeX] = useState<string>("");
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isAIEnhancing, setIsAIEnhancing] = useState(false);
+  const [aiSuggestions, setAiSuggestions] = useState<string[]>([]);
+  const [atsScore, setAtsScore] = useState<number | null>(null);
 
   const addExperience = () => {
     setResumeData((prev) => ({
@@ -232,6 +235,114 @@ export default function ResumeGenerator() {
     URL.revokeObjectURL(url);
   };
 
+  const enhanceWithAI = async (
+    type: "bullet-points" | "summary" | "skills" | "optimization" | "keywords"
+  ) => {
+    setIsAIEnhancing(true);
+    try {
+      let request: any = { type };
+
+      switch (type) {
+        case "bullet-points":
+          // Use the first experience entry if available
+          if (resumeData.experience.length > 0) {
+            const exp = resumeData.experience[0];
+            request = {
+              ...request,
+              jobTitle: exp.position,
+              company: exp.company,
+              currentContent: exp.description.join(" "),
+            };
+          }
+          break;
+        case "summary":
+          request = {
+            ...request,
+            jobTitle: resumeData.experience[0]?.position || "Software Engineer",
+            experience: `${resumeData.experience.length} years of experience`,
+            targetRole:
+              resumeData.experience[0]?.position || "Senior Software Engineer",
+          };
+          break;
+        case "skills":
+          request = {
+            ...request,
+            jobTitle: resumeData.experience[0]?.position || "Software Engineer",
+            experience: `${resumeData.experience.length} years of experience`,
+          };
+          break;
+        case "keywords":
+          request = {
+            ...request,
+            jobTitle: resumeData.experience[0]?.position || "Software Engineer",
+            targetRole:
+              resumeData.experience[0]?.position || "Senior Software Engineer",
+          };
+          break;
+      }
+
+      const response = await fetch("/api/ai/enhance-resume", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(request),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to enhance resume");
+      }
+
+      const result = await response.json();
+      setAiSuggestions(result.suggestions);
+
+      // If it's an optimization request, update the summary
+      if (type === "optimization" && result.improvedContent) {
+        setResumeData((prev) => ({
+          ...prev,
+          summary: result.improvedContent || "",
+        }));
+      }
+    } catch (error) {
+      console.error("Error enhancing with AI:", error);
+      setAiSuggestions(["Unable to generate suggestions at this time."]);
+    } finally {
+      setIsAIEnhancing(false);
+    }
+  };
+
+  const analyzeResume = async () => {
+    setIsAIEnhancing(true);
+    try {
+      const targetJob =
+        resumeData.experience[0]?.position || "Software Engineer";
+      const resumeContent = JSON.stringify(resumeData);
+
+      const response = await fetch("/api/ai/analyze-resume", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ resumeContent, targetJob }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to analyze resume");
+      }
+
+      const analysis = await response.json();
+      setAtsScore(analysis.score);
+      setAiSuggestions([...analysis.suggestions, ...analysis.strengths]);
+    } catch (error) {
+      console.error("Error analyzing resume:", error);
+      setAiSuggestions([
+        "Unable to analyze resume effectiveness at this time.",
+      ]);
+    } finally {
+      setIsAIEnhancing(false);
+    }
+  };
+
   return (
     <div className="container mx-auto py-8 px-4">
       <div className="mb-8">
@@ -367,12 +478,34 @@ export default function ResumeGenerator() {
 
           <Card>
             <CardHeader>
-              <CardTitle>Professional Summary</CardTitle>
+              <CardTitle className="flex items-center justify-between">
+                Professional Summary
+                <div className="flex gap-2">
+                  <Button
+                    onClick={() => enhanceWithAI("summary")}
+                    size="sm"
+                    variant="outline"
+                    disabled={isAIEnhancing}
+                  >
+                    <Sparkles className="h-4 w-4 mr-2" />
+                    {isAIEnhancing ? "Generating..." : "AI Enhance"}
+                  </Button>
+                  <Button
+                    onClick={() => enhanceWithAI("optimization")}
+                    size="sm"
+                    variant="outline"
+                    disabled={isAIEnhancing}
+                  >
+                    <Wand2 className="h-4 w-4 mr-2" />
+                    {isAIEnhancing ? "Optimizing..." : "Optimize"}
+                  </Button>
+                </div>
+              </CardTitle>
               <CardDescription>
                 A brief overview of your professional background and goals
               </CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="space-y-4">
               <Textarea
                 value={resumeData.summary}
                 onChange={(e) =>
@@ -384,6 +517,39 @@ export default function ResumeGenerator() {
                 placeholder="Experienced software engineer with 5+ years of expertise in full-stack development..."
                 rows={4}
               />
+
+              {/* AI Suggestions */}
+              {aiSuggestions.length > 0 && (
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                  <h4 className="font-semibold text-blue-900 mb-2 flex items-center">
+                    <Sparkles className="h-4 w-4 mr-2" />
+                    AI Suggestions
+                  </h4>
+                  <ul className="text-sm text-blue-800 space-y-1">
+                    {aiSuggestions.map((suggestion, index) => (
+                      <li key={index} className="flex items-start">
+                        <span className="mr-2">•</span>
+                        <span>{suggestion}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {/* Resume Score */}
+              {atsScore !== null && (
+                <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                  <h4 className="font-semibold text-green-900 mb-2">
+                    Resume Effectiveness Score: {atsScore}/10
+                  </h4>
+                  <div className="w-full bg-green-200 rounded-full h-2">
+                    <div
+                      className="bg-green-600 h-2 rounded-full"
+                      style={{ width: `${(atsScore / 10) * 100}%` }}
+                    ></div>
+                  </div>
+                </div>
+              )}
             </CardContent>
           </Card>
 
@@ -476,8 +642,19 @@ export default function ResumeGenerator() {
                       </Label>
                     </div>
                   </div>
-                  <div>
-                    <Label>Description</Label>
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <Label>Description</Label>
+                      <Button
+                        onClick={() => enhanceWithAI("bullet-points")}
+                        size="sm"
+                        variant="outline"
+                        disabled={isAIEnhancing}
+                      >
+                        <Sparkles className="h-4 w-4 mr-2" />
+                        {isAIEnhancing ? "Generating..." : "AI Enhance"}
+                      </Button>
+                    </div>
                     <Textarea
                       value={exp.description.join("\n")}
                       onChange={(e) =>
@@ -612,9 +789,18 @@ export default function ResumeGenerator() {
             </CardContent>
           </Card>
 
-          <div className="flex justify-center">
+          <div className="flex justify-center gap-4">
             <Button onClick={generateResume} disabled={isGenerating} size="lg">
               {isGenerating ? "Generating..." : "Generate LaTeX Resume"}
+            </Button>
+            <Button
+              onClick={analyzeResume}
+              disabled={isAIEnhancing}
+              size="lg"
+              variant="outline"
+            >
+              <Sparkles className="h-4 w-4 mr-2" />
+              {isAIEnhancing ? "Analyzing..." : "Analyze Resume"}
             </Button>
           </div>
         </TabsContent>

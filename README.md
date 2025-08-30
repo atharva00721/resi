@@ -5,11 +5,23 @@ A modern, beautiful web application for generating professional LaTeX resumes. B
 ## Features
 
 - **Interactive Form Interface**: Easy-to-use form for entering resume information
-- **LaTeX Generation**: Automatically generates professional LaTeX code using the ModernCV class
+- **AI-Powered Enhancement**: Gemini AI integration for smart content suggestions and optimization
+- **LaTeX Generation**: Automatically generates professional LaTeX code using industry-standard formatting
 - **Real-time Preview**: See the generated LaTeX code before downloading
 - **Professional Design**: Clean, modern UI with responsive design
 - **Multiple Sections**: Support for experience, education, skills, projects, and certifications
 - **Download Ready**: Direct download of .tex files for compilation
+
+### 🤖 AI Features
+
+- **Smart Content Generation**: AI-powered bullet points and professional summaries
+- **ATS Optimization**: Analyze and improve resume for Applicant Tracking Systems
+- **Keyword Suggestions**: Get relevant keywords for your target job
+- **Content Enhancement**: Improve existing content with better action verbs and impact
+- **Real-time Analysis**: Get instant feedback on resume quality and compatibility
+- **Interactive Chat**: Chat with AI assistants powered by Google Gemini models
+
+> **Note**: AI features require a Google Generative AI API key. The resume generator works without AI features, but you'll need the API key for the smart enhancement capabilities and chat functionality.
 
 ## Getting Started
 
@@ -17,6 +29,7 @@ A modern, beautiful web application for generating professional LaTeX resumes. B
 
 - Node.js 18+
 - npm, yarn, or bun
+- Google Generative AI API Key (for AI features)
 
 ### Installation
 
@@ -37,7 +50,23 @@ yarn install
 bun install
 ```
 
-3. Run the development server:
+3. Set up your Google Generative AI API Key:
+
+   Create a `.env.local` file in the root directory and add your API key:
+
+   ```bash
+   # .env.local
+   GOOGLE_GENERATIVE_AI_API_KEY=your_google_api_key_here
+   ```
+
+   **To get your API key:**
+
+   1. Go to [Google AI Studio](https://makersuite.google.com/app/apikey)
+   2. Sign in with your Google account
+   3. Click "Create API Key"
+   4. Copy the generated key and paste it in your `.env.local` file
+
+4. Run the development server:
 
 ```bash
 npm run dev
@@ -47,13 +76,23 @@ yarn dev
 bun dev
 ```
 
-4. Open [http://localhost:3000](http://localhost:3000) in your browser.
+5. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ## How to Use the Resume Generator
 
 1. **Navigate to the Resume Generator**: Click the "Resume Generator" button on the home page or go to `/resume`
 
-2. **Fill in Your Information**:
+## How to Use the Chat Feature
+
+1. **Navigate to the Chat**: Go to `/chat` in your browser
+2. **Select a Model**: Choose from available models:
+   - **Gemini Models**: Gemini 2.5 Pro, Flash, and Flash Lite
+3. **Enable Features**: Toggle web search and thinking mode as needed
+4. **Start Chatting**: Type your message and press Enter to start a conversation
+5. **View Sources**: When web search is enabled, view sources used in responses
+6. **See Reasoning**: When thinking mode is enabled, see the AI's reasoning process
+
+7. **Fill in Your Information**:
 
    - **Personal Information**: Name, email, phone, location, LinkedIn, GitHub, website
    - **Professional Summary**: A brief overview of your background and goals
@@ -63,11 +102,20 @@ bun dev
    - **Projects**: Showcase your projects with descriptions and technologies
    - **Certifications**: List your professional certifications
 
-3. **Generate LaTeX**: Click the "Generate LaTeX Resume" button to create your LaTeX code
+8. **Enhance with AI** (Optional): Use the AI enhancement buttons to:
 
-4. **Preview**: Switch to the "LaTeX Preview" tab to see the generated code
+   - Generate professional summaries
+   - Create compelling bullet points
+   - Optimize content for ATS systems
+   - Get keyword suggestions
 
-5. **Download**: Go to the "Download" tab and click "Download resume.tex"
+9. **Generate LaTeX**: Click the "Generate LaTeX Resume" button to create your LaTeX code
+
+10. **Analyze ATS**: Click "Analyze ATS" to get compatibility score and improvement suggestions
+
+11. **Preview**: Switch to the "LaTeX Preview" tab to see the generated code
+
+12. **Download**: Go to the "Download" tab and click "Download resume.tex"
 
 ## Compiling Your LaTeX Resume
 
