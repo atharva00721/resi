@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import LoginButton from "@/components/login-button";
 import {
   Card,
   CardContent,
@@ -21,6 +22,7 @@ export default function Home() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
+          <LoginButton />
           <div className="flex flex-col sm:flex-row gap-3">
             <Link href="/resume" className="flex-1">
               <Button className="w-full" size="lg">
