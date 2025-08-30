@@ -6,6 +6,8 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
+import Link from "next/link";
+import { FileText, Sparkles } from "lucide-react";
 
 export default function Home() {
   return (
@@ -20,10 +22,14 @@ export default function Home() {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex flex-col sm:flex-row gap-3">
-            <Button className="flex-1" size="lg">
-              Get Started
-            </Button>
+            <Link href="/resume" className="flex-1">
+              <Button className="w-full" size="lg">
+                <FileText className="h-4 w-4 mr-2" />
+                Resume Generator
+              </Button>
+            </Link>
             <Button variant="outline" className="flex-1" size="lg">
+              <Sparkles className="h-4 w-4 mr-2" />
               Learn More
             </Button>
           </div>
