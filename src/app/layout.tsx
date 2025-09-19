@@ -1,21 +1,61 @@
-
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-import { AuthProvider } from "@/components/auth-provider";
+import { AuthProvider } from "@/components/auth/auth-provider";
+import { Toaster } from "@/components/ui/sonner";
 
 const openAISans = localFont({
   src: [
-    { path: "../../public/fonts/open sans woff/OpenAISans-Light.woff2", weight: "300", style: "normal" },
-    { path: "../../public/fonts/open sans woff/OpenAISans-LightItalic.woff2", weight: "300", style: "italic" },
-    { path: "../../public/fonts/open sans woff/OpenAISans-Regular.woff2", weight: "400", style: "normal" },
-    { path: "../../public/fonts/open sans woff/OpenAISans-RegularItalic.woff2", weight: "400", style: "italic" },
-    { path: "../../public/fonts/open sans woff/OpenAISans-Medium.woff2", weight: "500", style: "normal" },
-    { path: "../../public/fonts/open sans woff/OpenAISans-MediumItalic.woff2", weight: "500", style: "italic" },
-    { path: "../../public/fonts/open sans woff/OpenAISans-Semibold.woff2", weight: "600", style: "normal" },
-    { path: "../../public/fonts/open sans woff/OpenAISans-SemiboldItalic.woff2", weight: "600", style: "italic" },
-    { path: "../../public/fonts/open sans woff/OpenAISans-Bold.woff2", weight: "700", style: "normal" },
-    { path: "../../public/fonts/open sans woff/OpenAISans-BoldItalic.woff2", weight: "700", style: "italic" },
+    {
+      path: "../../public/fonts/open sans woff/OpenAISans-Light.woff2",
+      weight: "300",
+      style: "normal",
+    },
+    {
+      path: "../../public/fonts/open sans woff/OpenAISans-LightItalic.woff2",
+      weight: "300",
+      style: "italic",
+    },
+    {
+      path: "../../public/fonts/open sans woff/OpenAISans-Regular.woff2",
+      weight: "400",
+      style: "normal",
+    },
+    {
+      path: "../../public/fonts/open sans woff/OpenAISans-RegularItalic.woff2",
+      weight: "400",
+      style: "italic",
+    },
+    {
+      path: "../../public/fonts/open sans woff/OpenAISans-Medium.woff2",
+      weight: "500",
+      style: "normal",
+    },
+    {
+      path: "../../public/fonts/open sans woff/OpenAISans-MediumItalic.woff2",
+      weight: "500",
+      style: "italic",
+    },
+    {
+      path: "../../public/fonts/open sans woff/OpenAISans-Semibold.woff2",
+      weight: "600",
+      style: "normal",
+    },
+    {
+      path: "../../public/fonts/open sans woff/OpenAISans-SemiboldItalic.woff2",
+      weight: "600",
+      style: "italic",
+    },
+    {
+      path: "../../public/fonts/open sans woff/OpenAISans-Bold.woff2",
+      weight: "700",
+      style: "normal",
+    },
+    {
+      path: "../../public/fonts/open sans woff/OpenAISans-BoldItalic.woff2",
+      weight: "700",
+      style: "italic",
+    },
   ],
   variable: "--font-openai-sans",
   display: "swap",
@@ -34,9 +74,8 @@ export default function RootLayout({
   return (
     <html lang="en" className={openAISans.className}>
       <body>
-        <AuthProvider>
-          {children}
-        </AuthProvider>
+        <AuthProvider>{children}</AuthProvider>
+        <Toaster />
       </body>
     </html>
   );
